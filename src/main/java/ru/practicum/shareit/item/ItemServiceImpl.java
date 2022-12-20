@@ -30,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
     public Item update(Item item, Long id) {
         User user = userRepository.getById(item.getOwner());
         Item itemToCheck = getById(id);
-        if(!user.getId().equals(itemToCheck.getOwner())) {
+        if (!user.getId().equals(itemToCheck.getOwner())) {
             throw new ObjectNotFoundException("Owners don't match.");
         }
         return itemRepository.update(item, id);
