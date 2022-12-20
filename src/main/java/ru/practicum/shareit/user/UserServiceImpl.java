@@ -38,8 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(Long id) {
-        return userRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException
-                (String.format("User with %d id not found.", id)));
+        return userRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException(String.format("User with %d id not found.", id)));
     }
 
     @Override

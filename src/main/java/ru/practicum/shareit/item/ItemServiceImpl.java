@@ -35,8 +35,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getById(Long id) {
-        return itemRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException
-                (String.format("Item with %d id not found.", id)));
+        return itemRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException(String.format("Item with %d id not found.", id)));
     }
 
     @Override
