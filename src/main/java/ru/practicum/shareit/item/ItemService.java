@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface ItemService {
     Item create(Item item);
@@ -11,7 +11,7 @@ public interface ItemService {
 
     Item getById(Long id);
 
-    Collection<Item> getAll(Long userId);
+    List<Item> getAll(Long userId);
 
-    Collection<Item> search(String text);
+    List<Item> search(String text);
 }

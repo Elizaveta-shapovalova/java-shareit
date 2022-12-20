@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Override
-    public Collection<User> getAll() {
+    public List<User> getAll() {
         return userRepository.getAll();
     }
 
@@ -29,27 +29,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user, Long id) {
-        validationNotFound(id);
-        validationEmail(user.getEmail());
+        User userToCheck = getById(id);
+        if (user.getEmail() != null && !user.getEmail().equals(userToCheck.getEmail())) {
+            validationEmail(user.getEmail());
+        }
         return userRepository.update(user, id);
     }
 
     @Override
     public User getById(Long id) {
-        validationNotFound(id);
-        return userRepository.getById(id);
+        return userRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException
+                (String.format("User with %d id not found.", id)));
     }
 
     @Override
     public void delete(Long id) {
-        validationNotFound(id);
+        getById(id);
         userRepository.delete(id);
-    }
-
-    public void validationNotFound(Long id) {
-        if (!userRepository.isExist(id)) {
-            throw new ObjectNotFoundException(String.format("User with %d id not found.", id));
-        }
     }
 
     private void validationEmail(String email) {

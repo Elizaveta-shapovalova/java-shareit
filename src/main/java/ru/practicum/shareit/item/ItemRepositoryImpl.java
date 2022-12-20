@@ -5,58 +5,56 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRepositoryImpl implements ItemRepository {
     final Map<Long, Item> items = new HashMap<>();
+    final Map<Long, List<Item>> userItemIndex = new LinkedHashMap<>();
     Long baseId = 0L;
 
     @Override
     public Item create(Item item) {
         item.setId(++baseId);
+        final List<Item> itemsToAdd = userItemIndex.computeIfAbsent(item.getOwner(), k -> new ArrayList<>());
+        itemsToAdd.add(item);
         items.put(item.getId(), item);
-        return items.get(item.getId());
+        return item;
     }
 
     @Override
     public Item update(Item item, Long id) {
-        if (item.getName() != null) {
-            items.get(id).setName(item.getName());
+        Item itemToUpdate = items.get(id);
+        if (item.getName() != null && !item.getName().isBlank()) {
+            itemToUpdate.setName(item.getName());
         }
-        if (item.getDescription() != null) {
-            items.get(id).setDescription(item.getDescription());
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
+            itemToUpdate.setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {
-            items.get(id).setAvailable(item.getAvailable());
+            itemToUpdate.setAvailable(item.getAvailable());
         }
-        return items.get(id);
+        return itemToUpdate;
     }
 
     @Override
-    public Item getById(Long id) {
-        return items.get(id);
+    public Optional<Item> getById(Long id) {
+        return items.get(id) == null ? Optional.empty() : Optional.of(items.get(id));
     }
 
     @Override
-    public Collection<Item> getAll(Long userId) {
-        return items.values().stream().filter(it -> it.getOwner().equals(userId)).collect(Collectors.toList());
+    public List<Item> getAll(Long userId) {
+        return List.copyOf(userItemIndex.get(userId));
     }
 
     @Override
-    public Collection<Item> search(String text) {
-        if (text.isBlank()) {
-            return List.of();
-        }
+    public List<Item> search(String text) {
         return items.values().stream()
                 .filter(it -> it.getName().toLowerCase().contains(text.toLowerCase()) ||
-                        it.getDescription().toLowerCase().contains(text.toLowerCase()))
-                .filter(it -> it.getAvailable().equals(true))
+                        it.getDescription().toLowerCase().contains(text.toLowerCase()) &&
+                                it.getAvailable().equals(true))
                 .collect(Collectors.toList());
     }
 

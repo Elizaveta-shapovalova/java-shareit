@@ -2,10 +2,11 @@ package ru.practicum.shareit.user;
 
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
-    Collection<User> getAll();
+    List<User> getAll();
 
     User create(User user);
 
@@ -13,9 +14,7 @@ public interface UserRepository {
 
     void delete(Long id);
 
-    User getById(Long id);
-
-    boolean isExist(Long id);
+    Optional<User> getById(Long id);
 
     boolean isEmailContains(String email);
 }

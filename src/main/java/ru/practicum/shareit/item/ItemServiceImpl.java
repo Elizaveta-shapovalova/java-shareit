@@ -8,7 +8,7 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserServiceImpl;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +21,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(Item item) {
-        userRepository.validationNotFound(item.getOwner());
+        userRepository.getById(item.getOwner());
         return itemRepository.create(item);
     }
 
     @Override
     public Item update(Item item, Long id) {
-        userRepository.validationNotFound(item.getOwner());
+        userRepository.getById(item.getOwner());
         validationNotFound(id);
         validationOwner(item, id);
         return itemRepository.update(item, id);
@@ -35,18 +35,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getById(Long id) {
-        validationNotFound(id);
-        return itemRepository.getById(id);
+        return itemRepository.getById(id).orElseThrow(() -> new ObjectNotFoundException
+                (String.format("Item with %d id not found.", id)));
     }
 
     @Override
-    public Collection<Item> getAll(Long userId) {
-        userRepository.validationNotFound(userId);
+    public List<Item> getAll(Long userId) {
+        userRepository.getById(userId);
         return itemRepository.getAll(userId);
     }
 
     @Override
-    public Collection<Item> search(String text) {
+    public List<Item> search(String text) {
+        if (text.isBlank()) {
+            return List.of();
+        }
         return itemRepository.search(text);
     }
 

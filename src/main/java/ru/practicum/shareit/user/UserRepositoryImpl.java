@@ -5,9 +5,10 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -16,8 +17,8 @@ public class UserRepositoryImpl implements UserRepository {
     Long baseId = 0L;
 
     @Override
-    public Collection<User> getAll() {
-        return users.values();
+    public List<User> getAll() {
+        return List.copyOf(users.values());
     }
 
     @Override
@@ -29,13 +30,14 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User update(User user, Long id) {
-        if (user.getName() != null) {
-            users.get(id).setName(user.getName());
+        User userToUpdate = users.get(id);
+        if (user.getName() != null && !user.getName().isBlank()) {
+            userToUpdate.setName(user.getName());
         }
-        if (user.getEmail() != null) {
-            users.get(id).setEmail(user.getEmail());
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            userToUpdate.setEmail(user.getEmail());
         }
-        return users.get(id);
+        return userToUpdate;
     }
 
     @Override
@@ -44,13 +46,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getById(Long id) {
-        return users.get(id);
-    }
-
-    @Override
-    public boolean isExist(Long id) {
-        return users.containsKey(id);
+    public Optional<User> getById(Long id) {
+        return users.get(id) == null ? Optional.empty() : Optional.of(users.get(id));
     }
 
     @Override

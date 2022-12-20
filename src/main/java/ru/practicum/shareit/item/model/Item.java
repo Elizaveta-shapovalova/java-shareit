@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.request.model.ItemRequest;
 
 @Builder
 @Data
@@ -15,5 +14,5 @@ public class Item {
     String description;
     Boolean available;
     Long owner;
-    ItemRequest request;
+    Long request;
 }
