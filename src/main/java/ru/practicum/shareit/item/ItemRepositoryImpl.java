@@ -41,7 +41,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Optional<Item> getById(Long id) {
-        return items.get(id) == null ? Optional.empty() : Optional.of(items.get(id));
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override
@@ -56,15 +56,5 @@ public class ItemRepositoryImpl implements ItemRepository {
                         it.getDescription().toLowerCase().contains(text.toLowerCase()) &&
                                 it.getAvailable().equals(true))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean isExist(Long id) {
-        return items.containsKey(id);
-    }
-
-    @Override
-    public boolean isOwner(Item item, Long id) {
-        return items.get(id).getOwner().equals(item.getOwner());
     }
 }

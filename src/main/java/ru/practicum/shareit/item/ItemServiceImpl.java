@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserServiceImpl;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -27,9 +28,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item update(Item item, Long id) {
-        userRepository.getById(item.getOwner());
-        validationNotFound(id);
-        validationOwner(item, id);
+        User user = userRepository.getById(item.getOwner());
+        Item itemToCheck = getById(id);
+        if(!user.getId().equals(itemToCheck.getOwner())) {
+            throw new ObjectNotFoundException("Owners don't match.");
+        }
         return itemRepository.update(item, id);
     }
 
@@ -50,17 +53,5 @@ public class ItemServiceImpl implements ItemService {
             return List.of();
         }
         return itemRepository.search(text);
-    }
-
-    private void validationNotFound(Long id) {
-        if (!itemRepository.isExist(id)) {
-            throw new ObjectNotFoundException(String.format("Item with %d id not found.", id));
-        }
-    }
-
-    private void validationOwner(Item item, Long id) {
-        if (!itemRepository.isOwner(item, id)) {
-            throw new ObjectNotFoundException("Owners don't match.");
-        }
     }
 }

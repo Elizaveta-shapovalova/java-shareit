@@ -16,36 +16,35 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.error(e.getLocalizedMessage(), e.getMessage());
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleControllerArgumentNotValidException(ConstraintViolationException e) {
-        log.error(e.getLocalizedMessage(), e.getMessage());
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse("Controller argument not valid");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.error(e.getLocalizedMessage(), e.getMessage());
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse("Method argument not valid");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFoundException(final ObjectNotFoundException e) {
-        log.error(e.getLocalizedMessage(), e.getMessage());
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleServerException(final Throwable e) {
-        log.error(e.getLocalizedMessage(), e.getMessage());
-
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse("An Unexpected Error Occurred");
     }
 }

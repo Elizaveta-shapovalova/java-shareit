@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User user, Long id) {
         User userToCheck = getById(id);
-        if (user.getEmail() != null && !user.getEmail().equals(userToCheck.getEmail())) {
+        if (user.getEmail() != null && !user.getEmail().isBlank() && !user.getEmail().equals(userToCheck.getEmail())) {
             validationEmail(user.getEmail());
         }
         return userRepository.update(user, id);
