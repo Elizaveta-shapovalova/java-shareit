@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolationException;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
@@ -36,7 +36,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleObjectNotFoundException(final ObjectNotFoundException e) {
+    public ErrorResponse handleObjectNotFoundException(final NotFoundException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

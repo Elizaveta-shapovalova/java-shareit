@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.repository;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemRepositoryImpl implements ItemRepository {
+public class ItemRepositoryInMemoryImpl implements ItemRepositoryInMemory {
     final Map<Long, Item> items = new HashMap<>();
     final Map<Long, List<Item>> userItemIndex = new LinkedHashMap<>();
     Long baseId = 0L;

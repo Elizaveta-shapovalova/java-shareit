@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validationInterface.Create;
 import ru.practicum.shareit.validationInterface.Update;
 
@@ -36,8 +38,8 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@PathVariable("itemId") Long id) {
-        return ItemMapper.toItemDto(itemService.getById(id));
+    public ItemDto getById(@PathVariable("itemId") Long id, @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return ItemMapper.toItemDto(itemService.getById(id, userId));
     }
 
     @GetMapping
@@ -48,5 +50,11 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam String text) {
         return itemService.search(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+    }
+
+    @PostMapping("{itemId}/comment")
+    public CommentDto commented(@PathVariable("itemId") Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId,
+                                @Validated({Create.class}) @RequestBody CommentDto commentDto) {
+        return CommentMapper.toCommentDto(itemService.commented(CommentMapper.toComment(commentDto), itemId, userId));
     }
 }

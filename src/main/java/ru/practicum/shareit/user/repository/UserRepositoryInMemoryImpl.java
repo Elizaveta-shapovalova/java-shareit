@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.repository;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryInMemoryImpl implements UserRepositoryInMemory {
     final Map<Long, User> users = new HashMap<>();
     Long baseId = 0L;
 

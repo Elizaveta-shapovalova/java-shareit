@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validationInterface.Create;
 import ru.practicum.shareit.validationInterface.Update;
 

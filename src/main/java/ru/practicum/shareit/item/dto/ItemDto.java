@@ -4,10 +4,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.validationInterface.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Data
 @Builder
@@ -22,4 +24,7 @@ public class ItemDto {
     Boolean available;
     Long owner;
     Long request;
+    BookingShortDto lastBooking;
+    BookingShortDto nextBooking;
+    Set<CommentDto> comments;
 }

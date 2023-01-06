@@ -1,0 +1,115 @@
+package ru.practicum.shareit.item.service;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+public class ItemServiceImpl implements ItemService {
+
+    ItemRepository itemRepository;
+    UserService userService;
+    BookingRepository bookingRepository;
+    CommentRepository commentRepository;
+
+
+    @Override
+    public Item create(Item item) {
+        userService.getById(item.getOwner());
+        return itemRepository.save(item);
+    }
+
+    @Override
+    public Item update(Item item, Long id) {
+        User user = userService.getById(item.getOwner());
+        Item itemToUpdate = findById(id);
+        if (!user.getId().equals(itemToUpdate.getOwner())) {
+            throw new NotFoundException("Owners don't match.");
+        }
+        if (item.getName() != null && !item.getName().isBlank()) {
+            itemToUpdate.setName(item.getName());
+        }
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
+            itemToUpdate.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            itemToUpdate.setAvailable(item.getAvailable());
+        }
+        return itemRepository.save(itemToUpdate);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Item getById(Long id, Long userId) {
+        Item item = findById(id);
+        userService.getById(userId);
+        item.setComments(getComments(item));
+        if (item.getOwner().equals(userId)) {
+            item.setLastBooking(bookingRepository.findFirstByItemIdOrderByStart(item.getId()));
+            item.setNextBooking(bookingRepository.findFirstByItemIdOrderByStartDesc(item.getId()));
+        }
+        return item;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Item> getAll(Long userId) {
+        userService.getById(userId);
+        List<Item> items = itemRepository.findAllByOwner(userId);
+        for (Item item : items) {
+            item.setLastBooking(bookingRepository.findFirstByItemIdOrderByStart(item.getId()));
+            item.setNextBooking(bookingRepository.findFirstByItemIdOrderByStartDesc(item.getId()));
+            item.setComments(getComments(item));
+        }
+        return items;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Item> search(String text) {
+        if (text.isBlank()) {
+            return List.of();
+        }
+        return itemRepository.search(text);
+    }
+
+    @Override
+    public Comment commented(Comment comment, Long itemId, Long authorId) {
+        User user = userService.getById(authorId);
+        Item item = findById(itemId);
+        if (bookingRepository.findAllByBookerAndItemAndStatusEqualsAndEndBefore(user, item, Status.APPROVED,
+                LocalDateTime.now()).isEmpty()) {
+            throw new ValidationException("Refused access to add comment.");
+        }
+        comment.setItem(item);
+        comment.setAuthor(user);
+        return commentRepository.save(comment);
+    }
+
+    private Item findById(Long id) {
+        return itemRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Item with %d id not found.", id)));
+    }
+
+    private Set<Comment> getComments(Item item) {
+        return commentRepository.findAllByItem(item);
+    }
+}
