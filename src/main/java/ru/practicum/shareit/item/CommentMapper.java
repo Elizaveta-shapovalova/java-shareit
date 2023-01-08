@@ -3,9 +3,12 @@ package ru.practicum.shareit.item;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentShortDto;
 import ru.practicum.shareit.item.model.Comment;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
@@ -18,10 +21,14 @@ public class CommentMapper {
                 .build();
     }
 
-    public static Comment toComment(CommentDto commentDto) {
+    public static Set<CommentDto> toListCommentDto(Set<Comment> comments) {
+        return comments.stream().map(CommentMapper::toCommentDto).collect(Collectors.toSet());
+    }
+
+    public static Comment toComment(CommentShortDto commentShortDto) {
         return Comment.builder()
-                .id(commentDto.getId())
-                .text(commentDto.getText())
+                .id(commentShortDto.getId())
+                .text(commentShortDto.getText())
                 .build();
     }
 }

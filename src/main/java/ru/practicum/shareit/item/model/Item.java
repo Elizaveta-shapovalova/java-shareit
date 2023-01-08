@@ -10,7 +10,8 @@ import java.util.Set;
 @Entity
 @Table(name = "items")
 @Builder
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

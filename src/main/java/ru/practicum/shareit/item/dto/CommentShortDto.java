@@ -4,15 +4,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.validationInterface.Create;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CommentDto {
+public class CommentShortDto {
     Long id;
+    @NotBlank(groups = {Create.class})
     String text;
-    String authorName;
-    LocalDateTime created;
 }

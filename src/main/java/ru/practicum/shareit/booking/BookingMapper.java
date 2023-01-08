@@ -6,6 +6,9 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
     public static BookingDto toBookingDto(Booking booking) {
@@ -14,26 +17,19 @@ public class BookingMapper {
                 .start(booking.getStart())
                 .end(booking.getEnd())
                 .status(booking.getStatus())
-                .booker(booking.getBooker())
-                .item(booking.getItem())
+                .booker(new BookingDto.Booker(booking.getBooker().getId(), booking.getBooker().getName()))
+                .item(new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName()))
                 .build();
     }
 
     public static Booking toBooking(BookingShortDto bookingShortDto) {
         return Booking.builder()
-                .id(bookingShortDto.getId())
                 .start(bookingShortDto.getStart())
                 .end(bookingShortDto.getEnd())
                 .build();
     }
 
-    public static BookingShortDto toBookingShortDto(Booking booking) {
-        return BookingShortDto.builder()
-                .id(booking.getId())
-                .itemId(booking.getItem().getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .bookerId(booking.getBooker().getId())
-                .build();
+    public static List<BookingDto> toListBookingDto(List<Booking> bookings) {
+        return bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }

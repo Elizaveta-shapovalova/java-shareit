@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.validationInterface.Create;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -42,13 +41,13 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestParam(value = "state", required = false, defaultValue = "ALL") String state) {
-        return bookingService.getAllByUser(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                                         @RequestParam(value = "state", defaultValue = "ALL") State state) {
+        return BookingMapper.toListBookingDto(bookingService.getAllByUser(userId, state));
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @RequestParam(value = "state", required = false, defaultValue = "ALL") String state) {
-        return bookingService.getAllByOwner(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+                                          @RequestParam(value = "state", defaultValue = "ALL") State state) {
+        return BookingMapper.toListBookingDto(bookingService.getAllByOwner(userId, state));
     }
 }

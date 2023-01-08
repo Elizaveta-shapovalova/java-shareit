@@ -4,11 +4,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.validationInterface.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -24,7 +24,16 @@ public class ItemDto {
     Boolean available;
     Long owner;
     Long request;
-    BookingShortDto lastBooking;
-    BookingShortDto nextBooking;
+    BookingDto lastBooking;
+    BookingDto nextBooking;
     Set<CommentDto> comments;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class BookingDto {
+        Long id;
+        LocalDateTime start;
+        LocalDateTime end;
+        Long bookerId;
+    }
 }

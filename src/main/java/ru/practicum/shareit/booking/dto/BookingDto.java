@@ -4,10 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 
@@ -16,11 +13,23 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingDto {
     Long id;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDateTime start;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDateTime end;
-    Item item;
-    User booker;
     Status status;
+    Booker booker;
+    Item item;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Booker {
+        Long id;
+        String name;
+    }
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class Item {
+        Long id;
+        String name;
+    }
 }

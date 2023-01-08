@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -30,13 +31,14 @@ public class ItemServiceImpl implements ItemService {
     BookingRepository bookingRepository;
     CommentRepository commentRepository;
 
-
+    @Transactional
     @Override
     public Item create(Item item) {
         userService.getById(item.getOwner());
         return itemRepository.save(item);
     }
 
+    @Transactional
     @Override
     public Item update(Item item, Long id) {
         User user = userService.getById(item.getOwner());
@@ -53,36 +55,33 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             itemToUpdate.setAvailable(item.getAvailable());
         }
-        return itemRepository.save(itemToUpdate);
+        return itemToUpdate;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Item getById(Long id, Long userId) {
         Item item = findById(id);
         userService.getById(userId);
         item.setComments(getComments(item));
         if (item.getOwner().equals(userId)) {
-            item.setLastBooking(bookingRepository.findFirstByItemIdOrderByStart(item.getId()));
-            item.setNextBooking(bookingRepository.findFirstByItemIdOrderByStartDesc(item.getId()));
+            item.setLastBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStart(item.getId(), Status.APPROVED));
+            item.setNextBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStartDesc(item.getId(), Status.APPROVED));
         }
         return item;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Item> getAll(Long userId) {
         userService.getById(userId);
         List<Item> items = itemRepository.findAllByOwner(userId);
-        for (Item item : items) {
-            item.setLastBooking(bookingRepository.findFirstByItemIdOrderByStart(item.getId()));
-            item.setNextBooking(bookingRepository.findFirstByItemIdOrderByStartDesc(item.getId()));
+        items.forEach(item -> {
             item.setComments(getComments(item));
-        }
+            item.setLastBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStart(item.getId(), Status.APPROVED));
+            item.setNextBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStartDesc(item.getId(), Status.APPROVED));
+        });
         return items;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Item> search(String text) {
         if (text.isBlank()) {
@@ -91,6 +90,7 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.search(text);
     }
 
+    @Transactional
     @Override
     public Comment commented(Comment comment, Long itemId, Long authorId) {
         User user = userService.getById(authorId);

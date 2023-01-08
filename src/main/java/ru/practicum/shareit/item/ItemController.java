@@ -6,13 +6,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentShortDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.validationInterface.Create;
 import ru.practicum.shareit.validationInterface.Update;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -39,22 +39,22 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable("itemId") Long id, @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return ItemMapper.toItemDto(itemService.getById(id, userId));
+        return ItemMapper.toItemDtoWithBooking(itemService.getById(id, userId));
     }
 
     @GetMapping
     public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getAll(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return ItemMapper.toListItemDtoWithBooking(itemService.getAll(userId));
     }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestParam String text) {
-        return itemService.search(text).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+        return ItemMapper.toListItemDto(itemService.search(text));
     }
 
     @PostMapping("{itemId}/comment")
     public CommentDto commented(@PathVariable("itemId") Long itemId, @RequestHeader("X-Sharer-User-Id") Long userId,
-                                @Validated({Create.class}) @RequestBody CommentDto commentDto) {
-        return CommentMapper.toCommentDto(itemService.commented(CommentMapper.toComment(commentDto), itemId, userId));
+                                @Validated({Create.class}) @RequestBody CommentShortDto commentShortDto) {
+        return CommentMapper.toCommentDto(itemService.commented(CommentMapper.toComment(commentShortDto), itemId, userId));
     }
 }
