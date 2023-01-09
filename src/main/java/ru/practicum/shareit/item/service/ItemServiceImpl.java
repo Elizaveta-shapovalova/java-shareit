@@ -68,8 +68,8 @@ public class ItemServiceImpl implements ItemService {
         userService.getById(userId);
         item.setComments(commentRepository.findAllByItem(item));
         if (item.getOwner().equals(userId)) {
-            item.setLastBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStart(item.getId(), Status.APPROVED));
-            item.setNextBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStartDesc(item.getId(), Status.APPROVED));
+            loadLastBooking(List.of(item));
+            loadNextBooking(List.of(item));
         }
         return item;
     }
@@ -78,20 +78,9 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> getAll(Long userId) {
         userService.getById(userId);
         List<Item> items = itemRepository.findAllByOwner(userId);
-
-        Map<Item, Set<Comment>> comments = commentRepository.findByItemIn(items)
-                .stream()
-                .collect(groupingBy(Comment::getItem, toSet()));
-
-        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatusEquals(items, Status.APPROVED)
-                .stream()
-                .collect(groupingBy(Booking::getItem, toList()));
-
-        items.forEach(item -> {
-            item.setComments(comments.get(item));
-            item.setLastBooking(bookings.get(item) != null ? bookings.get(item).get(0) : null);
-            item.setNextBooking(bookings.get(item) != null ? bookings.get(item).get(bookings.get(item).size() - 1) : null);
-        });
+        loadComments(items);
+        loadLastBooking(items);
+        loadNextBooking(items);
         return items;
     }
 
@@ -116,6 +105,34 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(user);
         return commentRepository.save(comment);
     }
+
+    private void loadComments(List<Item> items) {
+        Map<Item, Set<Comment>> comments = commentRepository.findByItemIn(items)
+                .stream()
+                .collect(groupingBy(Comment::getItem, toSet()));
+
+        items.forEach(item -> item.setComments(comments.get(item) != null ? comments.get(item) : null));
+    }
+
+    private void loadLastBooking(List<Item> items) {
+        Map<Item, List<Booking>> bookingsLast =
+                bookingRepository.findByItemInAndStatusEqualsAndStartBeforeOrStartEquals(items, Status.APPROVED,
+                                LocalDateTime.now(), LocalDateTime.now())
+                        .stream()
+                        .collect(groupingBy(Booking::getItem, toList()));
+
+        items.forEach(item -> item.setLastBooking(bookingsLast.get(item) != null ? bookingsLast.get(item).get(0) : null));
+    }
+
+    private void loadNextBooking(List<Item> items) {
+        Map<Item, List<Booking>> bookingsNext =
+                bookingRepository.findByItemInAndStatusEqualsAndStartAfter(items, Status.APPROVED, LocalDateTime.now())
+                        .stream()
+                        .collect(groupingBy(Booking::getItem, toList()));
+
+        items.forEach(item -> item.setNextBooking(bookingsNext.get(item) != null ? bookingsNext.get(item).get(0) : null));
+    }
+
 
     private Item findById(Long id) {
         return itemRepository.findById(id)
