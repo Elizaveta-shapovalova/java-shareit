@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -18,7 +19,10 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static java.util.stream.Collectors.*;
 
 @Transactional(readOnly = true)
 @Service
@@ -62,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
     public Item getById(Long id, Long userId) {
         Item item = findById(id);
         userService.getById(userId);
-        item.setComments(getComments(item));
+        item.setComments(commentRepository.findAllByItem(item));
         if (item.getOwner().equals(userId)) {
             item.setLastBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStart(item.getId(), Status.APPROVED));
             item.setNextBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStartDesc(item.getId(), Status.APPROVED));
@@ -74,10 +78,19 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> getAll(Long userId) {
         userService.getById(userId);
         List<Item> items = itemRepository.findAllByOwner(userId);
+
+        Map<Item, Set<Comment>> comments = commentRepository.findByItemIn(items)
+                .stream()
+                .collect(groupingBy(Comment::getItem, toSet()));
+
+        Map<Item, List<Booking>> bookings = bookingRepository.findByItemInAndStatusEquals(items, Status.APPROVED)
+                .stream()
+                .collect(groupingBy(Booking::getItem, toList()));
+
         items.forEach(item -> {
-            item.setComments(getComments(item));
-            item.setLastBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStart(item.getId(), Status.APPROVED));
-            item.setNextBooking(bookingRepository.findFirstByItemIdAndStatusEqualsOrderByStartDesc(item.getId(), Status.APPROVED));
+            item.setComments(comments.get(item));
+            item.setLastBooking(bookings.get(item) != null ? bookings.get(item).get(0) : null);
+            item.setNextBooking(bookings.get(item) != null ? bookings.get(item).get(bookings.get(item).size() - 1) : null);
         });
         return items;
     }
@@ -107,9 +120,5 @@ public class ItemServiceImpl implements ItemService {
     private Item findById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Item with %d id not found.", id)));
-    }
-
-    private Set<Comment> getComments(Item item) {
-        return commentRepository.findAllByItem(item);
     }
 }

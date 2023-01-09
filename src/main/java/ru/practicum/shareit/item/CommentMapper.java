@@ -27,7 +27,6 @@ public class CommentMapper {
 
     public static Comment toComment(CommentShortDto commentShortDto) {
         return Comment.builder()
-                .id(commentShortDto.getId())
                 .text(commentShortDto.getText())
                 .build();
     }
