@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
     public Item getById(Long id, Long userId) {
         Item item = findById(id);
         userService.getById(userId);
-        item.setComments(commentRepository.findAllByItem(item));
+        loadComments(List.of(item));
         if (item.getOwner().equals(userId)) {
             loadLastBooking(List.of(item));
             loadNextBooking(List.of(item));
@@ -111,26 +112,29 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .collect(groupingBy(Comment::getItem, toSet()));
 
-        items.forEach(item -> item.setComments(comments.get(item) != null ? comments.get(item) : null));
+        items.forEach(item -> item.setComments(comments.getOrDefault(item, Collections.emptySet())));
     }
 
     private void loadLastBooking(List<Item> items) {
         Map<Item, List<Booking>> bookingsLast =
-                bookingRepository.findByItemInAndStatusEqualsAndStartBeforeOrStartEquals(items, Status.APPROVED,
-                                LocalDateTime.now(), LocalDateTime.now())
+                bookingRepository.findByItemInAndStatusEqualsAndStartLessThanEqualOrderByStartDesc(items, Status.APPROVED,
+                                LocalDateTime.now())
                         .stream()
                         .collect(groupingBy(Booking::getItem, toList()));
 
-        items.forEach(item -> item.setLastBooking(bookingsLast.get(item) != null ? bookingsLast.get(item).get(0) : null));
+        items.forEach(item -> item.setLastBooking(bookingsLast.getOrDefault(item, List.of())
+                .stream().findFirst().orElse(null)));
     }
 
     private void loadNextBooking(List<Item> items) {
         Map<Item, List<Booking>> bookingsNext =
-                bookingRepository.findByItemInAndStatusEqualsAndStartAfter(items, Status.APPROVED, LocalDateTime.now())
+                bookingRepository.findByItemInAndStatusEqualsAndStartAfterOrderByStart(items, Status.APPROVED,
+                                LocalDateTime.now())
                         .stream()
                         .collect(groupingBy(Booking::getItem, toList()));
 
-        items.forEach(item -> item.setNextBooking(bookingsNext.get(item) != null ? bookingsNext.get(item).get(0) : null));
+        items.forEach(item -> item.setNextBooking(bookingsNext.getOrDefault(item, List.of())
+                .stream().findFirst().orElse(null)));
     }
 
 
