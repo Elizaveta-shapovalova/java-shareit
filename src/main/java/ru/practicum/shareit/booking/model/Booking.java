@@ -1,34 +1,36 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "bookings")
 @Builder
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Booking {
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @PastOrPresent
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "start_date", nullable = false)
     LocalDateTime start;
-    @FutureOrPresent
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "end_date", nullable = false)
     LocalDateTime end;
-    @NotNull
-    Item item; //вещь, которую пользователь бронирует
-    @NotNull
-    User booker; //пользователь, который осуществляет бронирование
-    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
+    Item item;
+    @ManyToOne
+    @JoinColumn(name = "booker_id", referencedColumnName = "id", nullable = false)
+    User booker;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 8)
     Status status;
 }

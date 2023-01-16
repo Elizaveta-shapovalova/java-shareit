@@ -8,6 +8,8 @@ import ru.practicum.shareit.validationInterface.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -22,4 +24,16 @@ public class ItemDto {
     Boolean available;
     Long owner;
     Long request;
+    BookingDto lastBooking;
+    BookingDto nextBooking;
+    Set<CommentDto> comments;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    public static class BookingDto {
+        Long id;
+        LocalDateTime start;
+        LocalDateTime end;
+        Long bookerId;
+    }
 }

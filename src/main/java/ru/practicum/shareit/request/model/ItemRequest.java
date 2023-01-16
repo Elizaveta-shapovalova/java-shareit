@@ -20,7 +20,7 @@ public class ItemRequest {
     @NotNull
     String description;
     @NotNull
-    User requester; //пользователь, создавший запрос
+    User requestor; //пользователь, создавший запрос
     @PastOrPresent
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDateTime created; //дата и время создания запроса

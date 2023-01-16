@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import javax.validation.ConstraintViolationException;
 
@@ -14,7 +15,7 @@ import javax.validation.ConstraintViolationException;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
@@ -29,14 +30,22 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
+        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse("Method argument not valid");
     }
 
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleObjectNotFoundException(final ObjectNotFoundException e) {
+    public ErrorResponse handleObjectNotFoundException(final NotFoundException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
