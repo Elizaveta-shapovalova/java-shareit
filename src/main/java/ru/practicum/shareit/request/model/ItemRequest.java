@@ -1,27 +1,36 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
+@Entity
+@Table(name = "requests")
+@EntityListeners(AuditingEntityListener.class)
 @Builder
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequest {
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @NotNull
+    @Column(length = 512, nullable = false)
     String description;
-    @NotNull
-    User requestor; //пользователь, создавший запрос
-    @PastOrPresent
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    LocalDateTime created; //дата и время создания запроса
+    @ManyToOne
+    @JoinColumn(name = "requester_id", referencedColumnName = "id", nullable = false)
+    User requester;
+    @CreatedDate
+    LocalDateTime created;
+    @Transient
+    Set<Item> items;
 }

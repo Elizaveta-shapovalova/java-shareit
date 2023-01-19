@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -14,8 +15,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -32,43 +34,41 @@ import static java.util.stream.Collectors.*;
 public class ItemServiceImpl implements ItemService {
 
     ItemRepository itemRepository;
-    UserService userService;
+    UserRepository userRepository;
     BookingRepository bookingRepository;
     CommentRepository commentRepository;
+    ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
-    public Item create(Item item) {
-        userService.getById(item.getOwner());
+    public Item create(Item item, Long userId) {
+        User user = findUserById(userId);
+        item.setOwner(user);
+        if (item.getRequester() != null) {
+            itemRequestRepository.findById(item.getRequester())
+                    .orElseThrow(() -> new NotFoundException(String.format("Request with %d id not found.", item.getRequester())));
+        }
         return itemRepository.save(item);
     }
 
     @Transactional
     @Override
-    public Item update(Item item, Long id) {
-        User user = userService.getById(item.getOwner());
+    public Item update(Item item, Long id, Long userId) {
+        User user = findUserById(userId);
         Item itemToUpdate = findById(id);
-        if (!user.getId().equals(itemToUpdate.getOwner())) {
+        if (!user.getId().equals(itemToUpdate.getOwner().getId())) {
             throw new NotFoundException("Owners don't match.");
         }
-        if (item.getName() != null && !item.getName().isBlank()) {
-            itemToUpdate.setName(item.getName());
-        }
-        if (item.getDescription() != null && !item.getDescription().isBlank()) {
-            itemToUpdate.setDescription(item.getDescription());
-        }
-        if (item.getAvailable() != null) {
-            itemToUpdate.setAvailable(item.getAvailable());
-        }
+        updateFields(item, itemToUpdate);
         return itemToUpdate;
     }
 
     @Override
     public Item getById(Long id, Long userId) {
+        findUserById(userId);
         Item item = findById(id);
-        userService.getById(userId);
         loadComments(List.of(item));
-        if (item.getOwner().equals(userId)) {
+        if (item.getOwner().getId().equals(userId)) {
             loadLastBooking(List.of(item));
             loadNextBooking(List.of(item));
         }
@@ -76,9 +76,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAll(Long userId) {
-        userService.getById(userId);
-        List<Item> items = itemRepository.findAllByOwner(userId);
+    public List<Item> getAll(Long userId, int from, int size) {
+        validatePageMark(from, size);
+        findUserById(userId);
+        List<Item> items = itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size));
         loadComments(items);
         loadLastBooking(items);
         loadNextBooking(items);
@@ -86,17 +87,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> search(String text) {
+    public List<Item> search(String text, int from, int size) {
+        validatePageMark(from, size);
         if (text.isBlank()) {
             return List.of();
         }
-        return itemRepository.search(text);
+        return itemRepository.search(text, PageRequest.of(from / size, size));
     }
 
     @Transactional
     @Override
     public Comment commented(Comment comment, Long itemId, Long authorId) {
-        User user = userService.getById(authorId);
+        User user = findUserById(authorId);
         Item item = findById(itemId);
         if (bookingRepository.findAllByBookerAndItemAndStatusEqualsAndEndBefore(user, item, Status.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
@@ -137,9 +139,31 @@ public class ItemServiceImpl implements ItemService {
                 .stream().findFirst().orElse(null)));
     }
 
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with %d id not found.", userId)));
+    }
 
     private Item findById(Long id) {
         return itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Item with %d id not found.", id)));
+    }
+
+    private void updateFields(Item item, Item itemToUpdate) {
+        if (item.getName() != null && !item.getName().isBlank()) {
+            itemToUpdate.setName(item.getName());
+        }
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
+            itemToUpdate.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            itemToUpdate.setAvailable(item.getAvailable());
+        }
+    }
+
+    private void validatePageMark(int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException(String.format("Uncorrected numbering of page: from %d, size %d", from, size));
+        }
     }
 }
