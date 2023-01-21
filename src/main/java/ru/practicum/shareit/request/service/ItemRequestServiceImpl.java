@@ -7,7 +7,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -50,9 +49,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<ItemRequest> getAll(Long userId, int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException(String.format("Uncorrected numbering of page: from %d, size %d", from, size));
-        }
         findUserById(userId);
         List<ItemRequest> requests = itemRequestRepository.findAllByRequesterIdNotLikeOrderByCreated(userId,
                 PageRequest.of(from / size, size));
@@ -70,9 +66,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     private void loadItems(List<ItemRequest> requests) {
-        Map<Long, List<ItemRequest>> requestsToMap = requests.stream().collect(groupingBy(ItemRequest::getId));
+        Map<Long, List<ItemRequest>> requestById = requests.stream().collect(groupingBy(ItemRequest::getId));
 
-        Map<Long, Set<Item>> items = itemRepository.findByRequesterIn(requestsToMap.keySet())
+        Map<Long, Set<Item>> items = itemRepository.findByRequesterIn(requestById.keySet())
                 .stream()
                 .collect(groupingBy(Item::getRequester, toSet()));
 

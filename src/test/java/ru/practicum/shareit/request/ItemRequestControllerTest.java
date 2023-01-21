@@ -23,8 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -140,6 +139,30 @@ class ItemRequestControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(itemRequestService).getAll(anyLong(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAll_whenUncorrectedPageMarkFrom_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/requests/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "-1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemRequestService, never()).getAll(anyLong(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAll_whenUncorrectedPageMarkSize_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/requests/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("size", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemRequestService, never()).getAll(anyLong(), anyInt(), anyInt());
     }
 
     @SneakyThrows

@@ -83,7 +83,6 @@ public class BookingServiceIml implements BookingService {
 
     @Override
     public List<Booking> getAllByUser(Long userId, State state, int from, int size) {
-        validatePageMark(from, size);
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_DESC);
         User booker = findUserById(userId);
         List<Booking> bookings = List.of();
@@ -113,7 +112,6 @@ public class BookingServiceIml implements BookingService {
 
     @Override
     public List<Booking> getAllByOwner(Long userId, State state, int from, int size) {
-        validatePageMark(from, size);
         Pageable pageable = PageRequest.of(from / size, size, SORT_BY_DESC);
         findUserById(userId);
         List<Booking> bookings = List.of();
@@ -139,12 +137,6 @@ public class BookingServiceIml implements BookingService {
                 break;
         }
         return bookings;
-    }
-
-    private void validatePageMark(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException(String.format("Uncorrected numbering of page: from %d, size %d", from, size));
-        }
     }
 
     private User findUserById(Long userId) {

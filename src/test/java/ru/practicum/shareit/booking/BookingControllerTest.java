@@ -25,8 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -207,6 +206,30 @@ class BookingControllerTest {
 
     @SneakyThrows
     @Test
+    void getAllByUser_whenUncorrectedPageMarkFrom_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "-1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(bookingService, never()).getAllByUser(anyLong(), any(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAllByUser_whenUncorrectedPageMarkSize_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("size", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(bookingService, never()).getAllByUser(anyLong(), any(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
     void getAllByOwner_whenInvoked_thenReturnResponseStatusOkWithCollectionBookingsInBody() {
         when(bookingService.getAllByOwner(anyLong(), any(), anyInt(), anyInt())).thenReturn(List.of(booking));
 
@@ -228,5 +251,29 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$.[0].item.name").value(booking.getItem().getName()));
 
         verify(bookingService).getAllByOwner(anyLong(), any(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAllByOwner_whenUncorrectedPageMarkFrom_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "-1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(bookingService, never()).getAllByOwner(anyLong(), any(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAllByOwner_whenUncorrectedPageMarkSize_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("size", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(bookingService, never()).getAllByOwner(anyLong(), any(), anyInt(), anyInt());
     }
 }

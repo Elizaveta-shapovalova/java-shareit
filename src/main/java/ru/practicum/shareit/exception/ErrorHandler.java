@@ -34,7 +34,6 @@ public class ErrorHandler {
         return new ErrorResponse("Method argument not valid");
     }
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFoundException(final NotFoundException e) {

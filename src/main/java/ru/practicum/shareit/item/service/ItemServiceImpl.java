@@ -77,7 +77,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getAll(Long userId, int from, int size) {
-        validatePageMark(from, size);
         findUserById(userId);
         List<Item> items = itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size));
         loadComments(items);
@@ -88,7 +87,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> search(String text, int from, int size) {
-        validatePageMark(from, size);
         if (text.isBlank()) {
             return List.of();
         }
@@ -158,12 +156,6 @@ public class ItemServiceImpl implements ItemService {
         }
         if (item.getAvailable() != null) {
             itemToUpdate.setAvailable(item.getAvailable());
-        }
-    }
-
-    private void validatePageMark(int from, int size) {
-        if (from < 0 || size <= 0) {
-            throw new ValidationException(String.format("Uncorrected numbering of page: from %d, size %d", from, size));
         }
     }
 }

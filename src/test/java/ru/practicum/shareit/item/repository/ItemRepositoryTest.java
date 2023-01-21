@@ -46,14 +46,6 @@ class ItemRepositoryTest {
         assertEquals(1L, items.get(0).getId());
     }
 
-    @Test
-    void findAllByOwnerId() {
-    }
-
-    @Test
-    void findByRequesterIn() {
-    }
-
     @AfterEach
     void tearDown() {
         itemRepository.deleteAll();

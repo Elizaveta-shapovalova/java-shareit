@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -101,12 +100,6 @@ class ItemRequestServiceImplTest {
         List<ItemRequest> actualRequests = itemRequestService.getAllByUser(user.getId());
 
         assertTrue(actualRequests.isEmpty());
-    }
-
-    @Test
-    void getAll_whenNotValidPageMark_thenValidationExceptionThrown() {
-        ValidationException e = assertThrows(ValidationException.class, () -> itemRequestService.getAll(user.getId(), -1, 0));
-        assertEquals("Uncorrected numbering of page: from -1, size 0", e.getMessage());
     }
 
     @Test

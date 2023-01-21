@@ -174,12 +174,6 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getAll_whenNotValidPageMark_thenValidationExceptionThrown() {
-        ValidationException e = assertThrows(ValidationException.class, () -> itemService.getAll(user.getId(), -1, 0));
-        assertEquals("Uncorrected numbering of page: from -1, size 0", e.getMessage());
-    }
-
-    @Test
     void getAll_whenFindUserEmpty_thenNotFoundExceptionThrown() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -225,12 +219,6 @@ class ItemServiceImplTest {
         assertFalse(actualItems.isEmpty());
         assertEquals(1, actualItems.size());
         assertEquals(List.of(item), actualItems);
-    }
-
-    @Test
-    void search_whenNotValidPageMark_thenValidationExceptionThrown() {
-        ValidationException e = assertThrows(ValidationException.class, () -> itemService.search("text", -1, 0));
-        assertEquals("Uncorrected numbering of page: from -1, size 0", e.getMessage());
     }
 
     @Test

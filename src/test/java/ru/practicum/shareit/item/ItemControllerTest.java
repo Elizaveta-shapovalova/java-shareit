@@ -26,8 +26,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -189,6 +189,30 @@ class ItemControllerTest {
 
     @SneakyThrows
     @Test
+    void getAll_whenUncorrectedPageMarkFrom_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "-1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemService, never()).getAll(anyLong(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void getAll_whenUncorrectedPageMarkSize_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/items")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("size", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemService, never()).getAll(anyLong(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
     void search_whenInvoked_thenReturnResponseStatusOkWithEmptyCollectionItemsInBody() {
         when(itemService.search(anyString(), anyInt(), anyInt())).thenReturn(List.of());
 
@@ -223,6 +247,30 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.[0].comments").isEmpty());
 
         verify(itemService).search(anyString(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void search_whenUncorrectedPageMarkFrom_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/items/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("from", "-1")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemService, never()).search(anyString(), anyInt(), anyInt());
+    }
+
+    @SneakyThrows
+    @Test
+    void search_whenUncorrectedPageMarkSize_thenBadRequestReturned() {
+        mvc.perform(MockMvcRequestBuilders.get("/items/search")
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("size", "0")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(itemService, never()).search(anyString(), anyInt(), anyInt());
     }
 
     @SneakyThrows

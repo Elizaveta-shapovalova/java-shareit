@@ -202,12 +202,6 @@ class BookingServiceImlTest {
     }
 
     @Test
-    void getAllByUser_whenNotValidPageMark_thenValidationExceptionThrown() {
-        ValidationException e = assertThrows(ValidationException.class, () -> bookingService.getAllByUser(user.getId(), State.ALL, -1, 0));
-        assertEquals("Uncorrected numbering of page: from -1, size 0", e.getMessage());
-    }
-
-    @Test
     void getAllByUser_whenFindUserEmpty_thenNotFoundExceptionThrown() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -295,13 +289,6 @@ class BookingServiceImlTest {
         assertFalse(actualBookings.isEmpty());
         assertEquals(1, actualBookings.size());
         assertEquals(List.of(booking), actualBookings);
-    }
-
-
-    @Test
-    void getAllByOwner_whenNotValidPageMark_thenValidationExceptionThrown() {
-        ValidationException e = assertThrows(ValidationException.class, () -> bookingService.getAllByOwner(user.getId(), State.ALL, -1, 0));
-        assertEquals("Uncorrected numbering of page: from -1, size 0", e.getMessage());
     }
 
     @Test
