@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -25,10 +26,11 @@ public class Item {
     String description;
     @Column(name = "is_available", nullable = false)
     Boolean available;
-    @Column(name = "owner_id", nullable = false)
-    Long owner;
+    @ManyToOne
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    User owner;
     @Column(name = "request_id")
-    Long request;
+    Long requester;
     @Transient
     Booking lastBooking;
     @Transient

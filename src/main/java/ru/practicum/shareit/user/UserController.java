@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validationInterface.Create;
 import ru.practicum.shareit.validationInterface.Update;
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto getById(@PathVariable("userId") Long id) {
+    public UserDto getUserById(@PathVariable("userId") Long id) {
         return UserMapper.toUserDto(userService.getById(id));
     }
 

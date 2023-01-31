@@ -33,12 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User user, Long id) {
         User userToUpdate = getById(id);
-        if (user.getName() != null && !user.getName().isBlank()) {
-            userToUpdate.setName(user.getName());
-        }
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            userToUpdate.setEmail(user.getEmail());
-        }
+        updateFields(user, userToUpdate);
         return userToUpdate;
     }
 
@@ -51,5 +46,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    private void updateFields(User user, User userToUpdate) {
+        if (user.getName() != null && !user.getName().isBlank()) {
+            userToUpdate.setName(user.getName());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            userToUpdate.setEmail(user.getEmail());
+        }
     }
 }

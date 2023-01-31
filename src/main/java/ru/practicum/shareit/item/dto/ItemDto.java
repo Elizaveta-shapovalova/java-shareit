@@ -22,8 +22,7 @@ public class ItemDto {
     String description;
     @NotNull(groups = {Create.class})
     Boolean available;
-    Long owner;
-    Long request;
+    Long requestId;
     BookingDto lastBooking;
     BookingDto nextBooking;
     Set<CommentDto> comments;

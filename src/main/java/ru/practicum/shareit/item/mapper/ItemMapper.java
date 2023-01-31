@@ -1,11 +1,13 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,7 +18,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequester() != null ? item.getRequester() : null)
                 .comments(item.getComments() != null ? CommentMapper.toListCommentDto(item.getComments()) : null)
                 .build();
     }
@@ -27,7 +29,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                .request(item.getRequest() != null ? item.getRequest() : null)
+                .requestId(item.getRequester() != null ? item.getRequester() : null)
                 .lastBooking(item.getLastBooking() != null ?
                         new ItemDto.BookingDto(item.getLastBooking().getId(),
                                 item.getLastBooking().getStart(), item.getLastBooking().getEnd(),
@@ -46,9 +48,22 @@ public class ItemMapper {
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .owner(itemDto.getOwner())
-                .request(itemDto.getRequest() != null ? itemDto.getRequest() : null)
+                .requester(itemDto.getRequestId() != null ? itemDto.getRequestId() : null)
                 .build();
+    }
+
+    public static ItemShortDto toItemShortDto(Item item) {
+        return ItemShortDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .requestId(item.getRequester() != null ? item.getRequester() : null)
+                .build();
+    }
+
+    public static Set<ItemShortDto> toSetItemShortDto(Set<Item> items) {
+        return items.stream().map(ItemMapper::toItemShortDto).collect(Collectors.toSet());
     }
 
     public static List<ItemDto> toListItemDtoWithBooking(List<Item> items) {
