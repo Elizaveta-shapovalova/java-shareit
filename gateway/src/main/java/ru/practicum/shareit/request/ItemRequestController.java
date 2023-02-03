@@ -14,8 +14,8 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/requests")
+@RequiredArgsConstructor
 @Validated
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemRequestController {

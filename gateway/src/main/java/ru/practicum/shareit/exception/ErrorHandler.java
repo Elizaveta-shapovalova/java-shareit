@@ -15,7 +15,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException e) {
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
@@ -29,7 +29,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleControllerArgumentNotValidException(ConstraintViolationException e) {
+    public ErrorResponse handleControllerArgumentNotValidException(final ConstraintViolationException e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
         return new ErrorResponse("Controller argument not valid");
     }

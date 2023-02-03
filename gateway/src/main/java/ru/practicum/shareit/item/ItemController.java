@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +53,11 @@ public class ItemController {
     public ResponseEntity<Object> search(@RequestParam String text,
                                          @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
                                          @RequestParam(value = "size", defaultValue = "5") @Positive int size) {
-        return itemClient.search(text, from, size);
+        if (text.isBlank()) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return itemClient.search(text, from, size);
+        }
     }
 
     @PostMapping("{itemId}/comment")
