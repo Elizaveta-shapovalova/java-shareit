@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
@@ -11,14 +12,13 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(length = 50, nullable = false)
-    private String name;
-
-    @Column(unique = true, length = 50, nullable = false)
-    private String email;
+    Long id;
+    @Column(length = 255, nullable = false)
+    String name;
+    @Column(length = 512, nullable = false, unique = true)
+    String email;
 }
