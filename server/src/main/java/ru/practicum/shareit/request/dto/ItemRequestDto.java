@@ -8,7 +8,6 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.dto.ItemShortDto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Getter
