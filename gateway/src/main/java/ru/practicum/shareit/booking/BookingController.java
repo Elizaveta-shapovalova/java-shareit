@@ -70,12 +70,4 @@ public class BookingController {
         log.info("Approve status of booking {}", bookingId);
         return bookingClient.approveStatus(userId, bookingId, approved);
     }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<Map<String, String>> errorHandler(IllegalArgumentException ex) {
-        Map<String, String> resp = new HashMap<>();
-        resp.put("error", String.format("Unknown state: UNSUPPORTED_STATUS"));
-        return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
-    }
 }
