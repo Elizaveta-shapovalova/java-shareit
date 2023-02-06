@@ -1,40 +1,37 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
-import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "items")
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(length = 255, nullable = false)
-    String name;
-    @Column(length = 512, nullable = false)
-    String description;
-    @Column(name = "is_available", nullable = false)
-    Boolean available;
+    private Long id;
+
+    @Column(length = 50, nullable = false)
+    private String name;
+
+    @Column(length = 1000, nullable = false)
+    private String description;
+
+    @Column(name = "is_available")
+    private Boolean available;
+
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
-    User owner;
-    @Column(name = "request_id")
-    Long requester;
-    @Transient
-    Booking lastBooking;
-    @Transient
-    Booking nextBooking;
-    @Transient
-    Set<Comment> comments;
+    @JoinColumn(name = "id_owner")
+    private User owner;
+
+    @ManyToOne
+    @JoinColumn(name = "request_id", referencedColumnName = "id")
+    private ItemRequest request;
 }

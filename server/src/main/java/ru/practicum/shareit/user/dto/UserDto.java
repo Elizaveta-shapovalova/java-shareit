@@ -1,15 +1,16 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Builder
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
+@Builder(toBuilder = true)
 public class UserDto {
-    Long id;
-    String email;
-    String name;
+    private Long id;
+
+    private String name;
+
+    private String email;
 }
