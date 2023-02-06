@@ -4,8 +4,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.CommentMapper;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -148,7 +148,7 @@ public class ItemServiceImpl implements ItemService {
                         "не существует вещи с id " + itemId));
         if (bookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(userId, itemId, APPROVED,
                 LocalDateTime.now()).isEmpty()) {
-            throw new BadRequestException("Невозможно создать комментарий - " +
+            throw new ValidationException("Невозможно создать комментарий - " +
                     "вещь не бралась пользователем в аренду или аренда вещи еще не завершена");
         }
         Comment comment = toComment(commentDto);
