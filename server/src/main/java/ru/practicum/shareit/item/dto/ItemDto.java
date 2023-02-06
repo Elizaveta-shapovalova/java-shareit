@@ -1,32 +1,31 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
-@Data
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
+@Getter
+@Setter
+@Builder(toBuilder = true)
 public class ItemDto {
-    Long id;
-    String name;
-    String description;
-    Boolean available;
-    Long requestId;
-    BookingDto lastBooking;
-    BookingDto nextBooking;
-    Set<CommentDto> comments;
+    private Long id;
 
-    @Data
-    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-    public static class BookingDto {
-        Long id;
-        LocalDateTime start;
-        LocalDateTime end;
-        Long bookerId;
-    }
+    private String name;
+
+    private String description;
+
+    private Boolean available;
+
+    private Long requestId;
+
+    private BookingShortDto lastBooking;
+
+    private BookingShortDto nextBooking;
+
+    private List<CommentDto> comments;
 }
