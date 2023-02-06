@@ -1,8 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.validation.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -10,15 +13,16 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequestDto {
-    @NotBlank
-    private String name;
+    @NotBlank(groups = {Create.class})
+    String name;
 
-    @NotBlank
-    private String description;
+    @NotBlank(groups = {Create.class})
+    String description;
 
-    @NotNull
-    private Boolean available;
+    @NotNull(groups = {Create.class})
+    Boolean available;
 
-    private Long requestId;
+    Long requestId;
 }
