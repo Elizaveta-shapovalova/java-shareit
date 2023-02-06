@@ -1,47 +1,42 @@
 package ru.practicum.shareit.user;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validationInterface.Create;
-import ru.practicum.shareit.validationInterface.Update;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
-@RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserController {
-    UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<UserDto> getAll() {
-        return UserMapper.toListUserDto(userService.getAll());
+        return userService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public UserDto getById(@PathVariable Long id) {
+        return userService.getById(id);
     }
 
     @PostMapping
-    public UserDto create(@Validated({Create.class}) @RequestBody UserDto userDto) {
-        return UserMapper.toUserDto(userService.create(UserMapper.toUser(userDto)));
+    public UserDto create(@RequestBody UserDto userDto) {
+        return userService.create(userDto);
     }
 
-    @PatchMapping("/{userId}")
-    public UserDto update(@Validated({Update.class}) @RequestBody UserDto userDto, @PathVariable("userId") Long id) {
-        return UserMapper.toUserDto(userService.update(UserMapper.toUser(userDto), id));
+    @PatchMapping("/{id}")
+    public UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) {
+        return userService.update(userDto, id);
     }
 
-    @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable("userId") Long id) {
-        return UserMapper.toUserDto(userService.getById(id));
-    }
-
-    @DeleteMapping("{userId}")
-    public void delete(@PathVariable("userId") Long id) {
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
         userService.delete(id);
     }
 }

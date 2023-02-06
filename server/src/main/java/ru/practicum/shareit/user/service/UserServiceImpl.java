@@ -1,59 +1,70 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Transactional(readOnly = true)
+import static ru.practicum.shareit.user.UserMapper.toUser;
+import static ru.practicum.shareit.user.UserMapper.toUserDto;
+
 @Service
-@RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Transactional(readOnly = true)
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<UserDto> getAll() {
+        List<UserDto> users = new ArrayList<>();
+        for (User user : userRepository.findAll()) {
+            users.add(toUserDto(user));
+        }
+
+        return users;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserDto getById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Не найден пользователь с id: " + id));
+
+        return toUserDto(user);
     }
 
     @Transactional
     @Override
-    public User create(User user) {
-        return userRepository.save(user);
+    public UserDto create(UserDto userDto) {
+        User user = toUser(userDto);
+
+        return toUserDto(userRepository.save(user));
     }
 
     @Transactional
     @Override
-    public User update(User user, Long id) {
-        User userToUpdate = getById(id);
-        updateFields(user, userToUpdate);
-        return userToUpdate;
-    }
+    public UserDto update(UserDto userDto, Long id) {
+        User updatedUser = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Невозможно обновить данные пользователя. " +
+                        "Не найден пользователь с id: " + id));
+        Optional.ofNullable(userDto.getEmail()).ifPresent(updatedUser::setEmail);
+        Optional.ofNullable(userDto.getName()).ifPresent(updatedUser::setName);
 
-    @Override
-    public User getById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User with %d id not found.", id)));
+        return toUserDto(userRepository.save(updatedUser));
     }
 
     @Transactional
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
-    }
-
-    private void updateFields(User user, User userToUpdate) {
-        if (user.getName() != null && !user.getName().isBlank()) {
-            userToUpdate.setName(user.getName());
-        }
-        if (user.getEmail() != null && !user.getEmail().isBlank()) {
-            userToUpdate.setEmail(user.getEmail());
-        }
     }
 }
