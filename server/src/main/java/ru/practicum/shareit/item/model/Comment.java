@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Comment {
@@ -28,6 +31,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
     private User author;
-
+    @CreatedDate
     private LocalDateTime created;
 }

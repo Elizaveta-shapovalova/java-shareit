@@ -42,7 +42,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new NotFoundException("Невозможно создать запрос - " +
                         "не найден пользователь с id " + userId));
         ItemRequest itemRequest = toItemRequest(itemRequestDto);
-        itemRequest.setCreated(LocalDateTime.now());
         itemRequest.setRequestor(user);
         itemRequestRepository.save(itemRequest);
 

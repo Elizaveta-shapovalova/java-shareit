@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRequest {
@@ -25,5 +28,6 @@ public class ItemRequest {
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;
 
+    @CreatedDate
     private LocalDateTime created;
 }
