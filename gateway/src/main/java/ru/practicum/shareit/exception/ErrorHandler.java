@@ -30,7 +30,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         log.error("{}{}", e.getLocalizedMessage(), e.getMessage());
-        return new ErrorResponse("Controller argument not valid");
+        return new ErrorResponse("Unexpected error");
     }
 
     @ExceptionHandler
