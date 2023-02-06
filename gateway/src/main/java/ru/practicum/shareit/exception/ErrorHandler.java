@@ -16,7 +16,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(final IllegalArgumentException e) {
         log.error(e.getLocalizedMessage(), e.getMessage());
-        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
