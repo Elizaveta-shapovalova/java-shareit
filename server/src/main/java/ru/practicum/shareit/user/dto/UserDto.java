@@ -3,10 +3,13 @@ package ru.practicum.shareit.user.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Builder
+/*@Builder
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor*/
+@Getter
+@Setter
+@Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
     Long id;
