@@ -5,15 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.validationInterface.Create;
 
 import javax.validation.constraints.NotBlank;
 
+@AllArgsConstructor
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequestDto {
-    @NotBlank(groups = {Create.class})
+    @NotBlank
     String description;
 }

@@ -5,15 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.validationInterface.Create;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
+@AllArgsConstructor
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentRequestDto {
-    @NotBlank(groups = {Create.class})
-    String text;
+    Long id;
+    @NotBlank String text;
+    String authorName;
+    LocalDateTime created;
 }

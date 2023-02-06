@@ -1,4 +1,4 @@
-package ru.practicum.shareit.customAnnotation;
+package ru.practicum.shareit.annotation;
 
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 

@@ -22,7 +22,8 @@ public class ItemRequestClient extends BaseClient {
     @Autowired
     public ItemRequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
-                builder.uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
@@ -36,14 +37,14 @@ public class ItemRequestClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getAll(Long userId, int from, int size) {
+    public ResponseEntity<Object> getAll(Long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size);
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getById(Long userId, Long id) {
-        return get("/" + id, userId);
+    public ResponseEntity<Object> getById(Long userId, Long requestId) {
+        return get("/" + requestId, userId);
     }
 }

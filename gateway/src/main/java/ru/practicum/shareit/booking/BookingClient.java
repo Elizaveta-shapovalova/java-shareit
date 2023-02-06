@@ -1,7 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,9 +14,8 @@ import ru.practicum.shareit.client.BaseClient;
 import java.util.Map;
 
 @Service
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BookingClient extends BaseClient {
-    static String API_PREFIX = "/bookings";
+    private static final String API_PREFIX = "/bookings";
 
     @Autowired
     public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -30,7 +27,7 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getAllByUser(Long userId, BookingState state, int from, int size) {
+    public ResponseEntity<Object> getAllByUser(Long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -39,7 +36,7 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getAllByOwner(Long userId, BookingState state, int from, int size) {
+    public ResponseEntity<Object> getAllByOwner(Long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -57,7 +54,6 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> confirmRequest(Long userId, Long bookingId, Boolean approved) {
-        Map<String, Object> parameters = Map.of("approved", approved);
-        return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
+        return patch("/" + bookingId + "?approved=" + approved, userId);
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserRequestDto;
-import ru.practicum.shareit.validationInterface.Create;
-import ru.practicum.shareit.validationInterface.Update;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/users")
@@ -25,18 +25,22 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@Validated({Create.class}) @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<Object> create(@RequestBody @Valid UserRequestDto userRequestDto) {
         return userClient.create(userRequestDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> update(@Validated({Update.class}) @RequestBody UserRequestDto userRequestDto,
-                                         @PathVariable("userId") Long id) {
+    public ResponseEntity<Object> update(@PathVariable("userId") Long id, @RequestBody UserRequestDto userRequestDto) {
+        if (!userRequestDto.getEmail().isBlank() || userRequestDto.getEmail() != null) {
+            if (!userRequestDto.getEmail().contains("@")) {
+                throw new IllegalArgumentException();
+            }
+        }
         return userClient.update(userRequestDto, id);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUserById(@PathVariable("userId") Long id) {
+    public ResponseEntity<Object> getById(@PathVariable("userId") Long id) {
         return userClient.getById(id);
     }
 

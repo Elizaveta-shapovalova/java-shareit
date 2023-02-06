@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.validationInterface.Create;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -23,7 +23,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @Validated({Create.class}) @RequestBody ItemRequestDto itemRequestDto) {
+                                         @RequestBody @Valid ItemRequestDto itemRequestDto) {
         return itemRequestClient.create(userId, itemRequestDto);
     }
 
@@ -34,14 +34,14 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
-                                         @RequestParam(value = "size", defaultValue = "5") @Positive int size) {
+                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return itemRequestClient.getAll(userId, from, size);
     }
 
     @GetMapping("{requestId}")
     public ResponseEntity<Object> getById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @PathVariable("requestId") Long id) {
-        return itemRequestClient.getById(userId, id);
+                                          @PathVariable Long requestId) {
+        return itemRequestClient.getById(userId, requestId);
     }
 }

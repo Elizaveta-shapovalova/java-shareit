@@ -1,28 +1,26 @@
 package ru.practicum.shareit.booking.dto;
 
+import java.time.LocalDateTime;
+
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.customAnnotation.TimeCrossingValid;
-import ru.practicum.shareit.validationInterface.Create;
-
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import ru.practicum.shareit.annotation.TimeCrossingValid;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@TimeCrossingValid(groups = {Create.class})
+@TimeCrossingValid
 public class BookItemRequestDto {
-    @NotNull(groups = {Create.class})
     Long itemId;
-    @FutureOrPresent(groups = {Create.class})
+    @FutureOrPresent
     LocalDateTime start;
-    @Future(groups = {Create.class})
+    @Future
     LocalDateTime end;
 }

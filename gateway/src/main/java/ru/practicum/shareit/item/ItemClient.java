@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +35,15 @@ public class ItemClient extends BaseClient {
         return post("", userId, requestDto);
     }
 
-    public ResponseEntity<Object> update(Long userId, ItemRequestDto requestDto, Long id) {
-        return patch("/" + id, userId, requestDto);
+    public ResponseEntity<Object> update(Long userId, ItemRequestDto requestDto, Long itemId) {
+        return patch("/" + itemId, userId, requestDto);
     }
 
-    public ResponseEntity<Object> getById(Long id, Long userId) {
-        return get("/" + id, userId);
+    public ResponseEntity<Object> getById(Long userId, Long itemId) {
+        return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> getAll(Long userId, int from, int size) {
+    public ResponseEntity<Object> getAll(Long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -50,7 +51,7 @@ public class ItemClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> search(String text, int from, int size) {
+    public ResponseEntity<Object> search(String text, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,
@@ -59,7 +60,7 @@ public class ItemClient extends BaseClient {
         return get("/search?text={text}&from={from}&size={size}", null, parameters);
     }
 
-    public ResponseEntity<Object> commented(CommentRequestDto commentRequestDto, Long itemId, Long userId) {
+    public ResponseEntity<Object> commented(Long userId, Long itemId, CommentRequestDto commentRequestDto) {
         return post("/" + itemId + "/comment", userId, commentRequestDto);
     }
 }

@@ -5,20 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.validationInterface.Create;
-import ru.practicum.shareit.validationInterface.Update;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+@AllArgsConstructor
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRequestDto {
-    @NotBlank(groups = {Create.class})
-    @Email(groups = {Create.class, Update.class})
-    String email;
-    @NotBlank(groups = {Create.class})
+    Long id;
     String name;
+    @Email
+    @NotBlank
+    String email;
 }

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.customAnnotation;
+package ru.practicum.shareit.annotation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
