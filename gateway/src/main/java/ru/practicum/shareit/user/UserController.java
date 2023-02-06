@@ -1,51 +1,46 @@
 package ru.practicum.shareit.user;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserRequestDto;
-
-import javax.validation.Valid;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
 @Controller
 @RequestMapping("/users")
-@Slf4j
-@Validated
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class UserController {
-    private final UserClient userClient;
+    UserClient userClient;
 
     @GetMapping
-    public ResponseEntity<Object> getUsers() {
-        log.info("Get all users");
-        return userClient.getUsers();
+    public ResponseEntity<Object> getAll() {
+        return userClient.getAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getUser(@PathVariable Long id) {
-        log.info("Get user {}", id);
-        return userClient.getUser(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<Object> getById(@PathVariable Long userId) {
+        return userClient.getById(userId);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody @Valid UserRequestDto requestDto) {
-        log.info("Creating user");
-        return userClient.createUser(requestDto);
+    public ResponseEntity<Object> create(@Validated({Create.class}) @RequestBody UserRequestDto requestDto) {
+        return userClient.create(requestDto);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@RequestBody UserRequestDto requestDto,
-                                             @PathVariable Long id) {
-        log.info("Update user {}", id);
-        return userClient.updateUser(id, requestDto);
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Object> update(@Validated({Update.class}) @RequestBody UserRequestDto requestDto,
+                                         @PathVariable Long userId) {
+        return userClient.update(userId, requestDto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
-        log.info("Delete user {}", id);
-        return userClient.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> delete(@PathVariable Long userId) {
+        return userClient.delete(userId);
     }
 }

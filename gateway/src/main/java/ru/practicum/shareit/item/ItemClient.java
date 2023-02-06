@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,8 +16,9 @@ import ru.practicum.shareit.item.dto.ItemRequestDto;
 import java.util.Map;
 
 @Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemClient extends BaseClient {
-    private static final String API_PREFIX = "/items";
+    static String API_PREFIX = "/items";
 
     @Autowired
     public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -27,7 +30,7 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getItems(long userId, Integer from, Integer size) {
+    public ResponseEntity<Object> getAll(long userId, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -35,23 +38,19 @@ public class ItemClient extends BaseClient {
         return get("?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getItem(Long itemId, long userId) {
+    public ResponseEntity<Object> getById(Long itemId, long userId) {
         return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> createItem(long userId, ItemRequestDto requestDto) {
+    public ResponseEntity<Object> create(long userId, ItemRequestDto requestDto) {
         return post("", userId, requestDto);
     }
 
-    public ResponseEntity<Object> updateItem(ItemRequestDto requestDto, Long itemId, long userId) {
+    public ResponseEntity<Object> update(ItemRequestDto requestDto, Long itemId, long userId) {
         return patch("/" + itemId, userId, requestDto);
     }
 
-    public ResponseEntity<Object> deleteItem(Long itemId) {
-        return delete("/" + itemId);
-    }
-
-    public ResponseEntity<Object> searchItem(String text, Integer from, Integer size) {
+    public ResponseEntity<Object> search(String text, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,
@@ -60,7 +59,7 @@ public class ItemClient extends BaseClient {
         return get("/search?text={text}&from={from}&size={size}", null, parameters);
     }
 
-    public ResponseEntity<Object> createComment(Long itemId, long userId, CommentRequestDto requestDto) {
+    public ResponseEntity<Object> commented(Long itemId, long userId, CommentRequestDto requestDto) {
         return post("/" + itemId + "/comment", userId, requestDto);
     }
 }

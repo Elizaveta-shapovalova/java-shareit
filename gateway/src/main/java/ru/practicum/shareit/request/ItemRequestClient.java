@@ -1,5 +1,7 @@
 package ru.practicum.shareit.request;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +14,9 @@ import ru.practicum.shareit.request.dto.ItemRequestRequestDto;
 import java.util.Map;
 
 @Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ItemRequestClient extends BaseClient {
-    private static final String API_PREFIX = "/requests";
+    static String API_PREFIX = "/requests";
 
     public ItemRequestClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
@@ -23,22 +26,22 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getAll(long userId, int from, int size) {
+    public ResponseEntity<Object> getAll(Long userId, int from, int size) {
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size);
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> createItemRequest(long userId, ItemRequestRequestDto requestDto) {
+    public ResponseEntity<Object> create(Long userId, ItemRequestRequestDto requestDto) {
         return post("", userId, requestDto);
     }
 
-    public ResponseEntity<Object> getItemRequestsByUser(long userId) {
+    public ResponseEntity<Object> getAllByUser(Long userId) {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getItemRequest(Long requestId, long userId) {
+    public ResponseEntity<Object> getById(Long requestId, Long userId) {
         return get("/" + requestId, userId);
     }
 }
