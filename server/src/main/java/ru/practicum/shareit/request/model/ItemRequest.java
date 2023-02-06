@@ -3,10 +3,12 @@ package ru.practicum.shareit.request.model;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "requests")
@@ -30,4 +32,6 @@ public class ItemRequest {
 
     @CreatedDate
     private LocalDateTime created;
+    @Transient
+    Set<Item> items;
 }

@@ -1,5 +1,8 @@
 package ru.practicum.shareit.booking;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -9,12 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BookingController {
-    private final BookingService bookingService;
-
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
-    }
+    BookingService bookingService;
 
     @PostMapping
     public BookingDto create(@RequestBody BookingShortDto bookingShortDto,
