@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -8,26 +11,25 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
+@EntityListeners(AuditingEntityListener.class)
+@Builder
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(length = 1000, nullable = false)
-    private String text;
-
+    Long id;
+    @Column(length = 512, nullable = false)
+    String text;
     @ManyToOne
     @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
-    private Item item;
-
+    Item item;
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
-    private User author;
-
-    private LocalDateTime created;
+    User author;
+    @CreatedDate
+    LocalDateTime created;
 }
