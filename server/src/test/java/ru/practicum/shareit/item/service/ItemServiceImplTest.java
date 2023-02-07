@@ -184,7 +184,7 @@ class ItemServiceImplTest {
     @Test
     void getAll_whenInvoked_thenReturnEmptyCollectionItems() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRepository.findAllByOwnerId(anyLong(), any())).thenReturn(List.of());
+        when(itemRepository.findAllByOwnerIdOrderById(anyLong(), any())).thenReturn(List.of());
 
         List<Item> actualItems = itemService.getAll(user.getId(), 0, 1);
 
@@ -194,7 +194,7 @@ class ItemServiceImplTest {
     @Test
     void getAll_whenInvoked_thenReturnCollectionItems() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRepository.findAllByOwnerId(anyLong(), any())).thenReturn(List.of(item));
+        when(itemRepository.findAllByOwnerIdOrderById(anyLong(), any())).thenReturn(List.of(item));
 
         List<Item> actualItems = itemService.getAll(user.getId(), 0, 1);
 

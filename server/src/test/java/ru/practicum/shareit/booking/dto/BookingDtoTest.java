@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.BookingStatus;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +22,7 @@ class BookingDtoTest {
     void testSerialize() {
         BookingDto.Booker booker = new BookingDto.Booker(2L, "test");
         BookingDto.Item item = new BookingDto.Item(3L, "test");
-        BookingDto bookingDto = new BookingDto(1L, LocalDateTime.now(), LocalDateTime.now(), Status.WAITING, booker, item);
+        BookingDto bookingDto = new BookingDto(1L, LocalDateTime.now(), LocalDateTime.now(), BookingStatus.WAITING, booker, item);
 
         JsonContent<BookingDto> result = jacksonTester.write(bookingDto);
 

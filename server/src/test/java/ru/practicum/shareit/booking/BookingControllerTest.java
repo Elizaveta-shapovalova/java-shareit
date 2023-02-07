@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -25,7 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,7 +48,7 @@ class BookingControllerTest {
     final Booking booking = new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
             Item.builder().id(1L).name("test").owner(User.builder().id(2L).build()).build(),
             User.builder().id(1L).name("test").build(),
-            Status.WAITING);
+            BookingStatus.WAITING);
 
     @SneakyThrows
     @Test
@@ -76,7 +76,7 @@ class BookingControllerTest {
     @SneakyThrows
     @Test
     void confirmRequest_whenInvoked_thenReturnResponseStatusOkWithBookingInBody() {
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         when(bookingService.confirmRequest(any(), anyLong(), any())).thenReturn(booking);
 
 

@@ -49,7 +49,7 @@ class ItemRequestServiceImplTest {
         ItemRequest actualRequest = itemRequestService.create(user.getId(), requestWithoutUser);
 
         assertEquals(request, actualRequest);
-        assertEquals(request.getRequester(), actualRequest.getRequester());
+        assertEquals(request.getRequestor(), actualRequest.getRequestor());
         verify(itemRequestRepository).save(any());
     }
 
@@ -66,21 +66,21 @@ class ItemRequestServiceImplTest {
     @Test
     void getAllByUser_whenInvoked_thenReturnCollectionRequests() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdOrderByCreated(anyLong())).thenReturn(List.of(request));
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong())).thenReturn(List.of(request));
 
         List<ItemRequest> actualRequests = itemRequestService.getAllByUser(user.getId());
 
         assertFalse(actualRequests.isEmpty());
         assertEquals(1, actualRequests.size());
         assertEquals(request.getId(), actualRequests.get(0).getId());
-        assertEquals(request.getRequester(), actualRequests.get(0).getRequester());
+        assertEquals(request.getRequestor(), actualRequests.get(0).getRequestor());
         assertTrue(actualRequests.get(0).getItems().isEmpty());
     }
 
     @Test
     void getAllByUser_whenRequestsHaveItems_thenReturnCollectionRequestsWithCollectionItems() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdOrderByCreated(anyLong())).thenReturn(List.of(request));
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong())).thenReturn(List.of(request));
         when(itemRepository.findByRequesterIn(anyCollection())).thenReturn(Set.of(item));
 
         List<ItemRequest> actualRequests = itemRequestService.getAllByUser(user.getId());
@@ -88,14 +88,14 @@ class ItemRequestServiceImplTest {
         assertFalse(actualRequests.isEmpty());
         assertEquals(1, actualRequests.size());
         assertEquals(request.getId(), actualRequests.get(0).getId());
-        assertEquals(request.getRequester(), actualRequests.get(0).getRequester());
+        assertEquals(request.getRequestor(), actualRequests.get(0).getRequestor());
         assertEquals(Set.of(item), actualRequests.get(0).getItems());
     }
 
     @Test
     void getAllByUser_whenInvokedCollectionRequestsEmpty_thenReturnEmptyCollectionRequests() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdOrderByCreated(anyLong())).thenReturn(List.of());
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong())).thenReturn(List.of());
 
         List<ItemRequest> actualRequests = itemRequestService.getAllByUser(user.getId());
 
@@ -105,7 +105,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAll_whenInvoked_thenReturnCollectionRequests() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdNotLikeOrderByCreated(anyLong(), any()))
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong()))
                 .thenReturn(List.of(request));
 
         List<ItemRequest> actualRequests = itemRequestService.getAll(user.getId(), 0, 1);
@@ -119,7 +119,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAll_whenInvokedCollectionRequestsEmpty_thenReturnEmptyCollectionRequests() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdNotLikeOrderByCreated(anyLong(), any()))
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong()))
                 .thenReturn(List.of());
 
         List<ItemRequest> actualRequests = itemRequestService.getAll(user.getId(), 0, 1);
@@ -130,7 +130,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAll_whenRequestsHaveItems_thenReturnCollectionRequestsWithCollectionItems() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRequestRepository.findAllByRequesterIdNotLikeOrderByCreated(anyLong(), any())).thenReturn(List.of(request));
+        when(itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(anyLong())).thenReturn(List.of(request));
         when(itemRepository.findByRequesterIn(anyCollection())).thenReturn(Set.of(item));
 
         List<ItemRequest> actualRequests = itemRequestService.getAll(user.getId(), 0, 1);
@@ -138,7 +138,7 @@ class ItemRequestServiceImplTest {
         assertFalse(actualRequests.isEmpty());
         assertEquals(1, actualRequests.size());
         assertEquals(request.getId(), actualRequests.get(0).getId());
-        assertEquals(request.getRequester(), actualRequests.get(0).getRequester());
+        assertEquals(request.getRequestor(), actualRequests.get(0).getRequestor());
         assertEquals(Set.of(item), actualRequests.get(0).getItems());
     }
 

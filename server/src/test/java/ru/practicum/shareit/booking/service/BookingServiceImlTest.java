@@ -7,9 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.State;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -97,7 +96,7 @@ class BookingServiceImlTest {
         Booking actualBooking = bookingService.create(booking, user.getId(), item.getId());
 
         assertEquals(booking.getId(), actualBooking.getId());
-        assertEquals(Status.WAITING, actualBooking.getStatus());
+        assertEquals(BookingStatus.WAITING, actualBooking.getStatus());
         verify(bookingRepository).save(any());
     }
 
@@ -130,7 +129,7 @@ class BookingServiceImlTest {
     @Test
     void confirmRequest_whenBookingApproved_thenValidationExceptionThrown() {
         item.setOwner(User.builder().id(2L).build());
-        booking.setStatus(Status.APPROVED);
+        booking.setStatus(BookingStatus.APPROVED);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
@@ -141,27 +140,27 @@ class BookingServiceImlTest {
     @Test
     void confirmRequest_whenApproved_thenReturnBooking() {
         item.setOwner(User.builder().id(2L).build());
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         Booking actualBooking = bookingService.confirmRequest(2L, booking.getId(), true);
 
         assertEquals(booking.getId(), actualBooking.getId());
-        assertEquals(Status.APPROVED, actualBooking.getStatus());
+        assertEquals(BookingStatus.APPROVED, actualBooking.getStatus());
     }
 
     @Test
     void confirmRequest_whenRejected_thenReturnBooking() {
         item.setOwner(User.builder().id(2L).build());
-        booking.setStatus(Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         Booking actualBooking = bookingService.confirmRequest(2L, booking.getId(), false);
 
         assertEquals(booking.getId(), actualBooking.getId());
-        assertEquals(Status.REJECTED, actualBooking.getStatus());
+        assertEquals(BookingStatus.REJECTED, actualBooking.getStatus());
     }
 
     @Test
