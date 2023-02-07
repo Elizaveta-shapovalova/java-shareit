@@ -1,10 +1,12 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.*;
-import ru.practicum.shareit.request.model.ItemRequest;
+import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "items")
@@ -13,25 +15,34 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
     @Column(length = 50, nullable = false)
-    private String name;
+    String name;
 
     @Column(length = 1000, nullable = false)
-    private String description;
+    String description;
 
     @Column(name = "is_available")
-    private Boolean available;
+    Boolean available;
 
     @ManyToOne
     @JoinColumn(name = "id_owner")
-    private User owner;
+    User owner;
 
-    @ManyToOne
-    @JoinColumn(name = "request_id", referencedColumnName = "id")
-    private ItemRequest request;
+    @Column(name = "request_id")
+    Long requester;
+
+    @Transient
+    Booking lastBooking;
+
+    @Transient
+    Booking nextBooking;
+
+    @Transient
+    Set<Comment> comments;
 }
