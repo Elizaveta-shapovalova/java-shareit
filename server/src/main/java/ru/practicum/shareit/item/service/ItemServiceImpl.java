@@ -78,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getAll(Long userId, int from, int size) {
         findUserById(userId);
-        List<Item> items = itemRepository.findAllByOwnerId(userId, PageRequest.of(from / size, size));
+        List<Item> items = itemRepository.findAllByOwnerIdOrderById(userId, PageRequest.of(from / size, size));
         loadComments(items);
         loadLastBooking(items);
         loadNextBooking(items);
