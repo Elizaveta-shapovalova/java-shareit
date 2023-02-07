@@ -87,9 +87,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> search(String text, int from, int size) {
-        if (text.isBlank()) {
-            return List.of();
-        }
         return itemRepository.search(text, PageRequest.of(from / size, size));
     }
 
