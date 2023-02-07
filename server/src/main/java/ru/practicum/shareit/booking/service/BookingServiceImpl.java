@@ -4,14 +4,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -56,12 +56,12 @@ public class BookingServiceImpl implements BookingService {
                     "пользователь не может забронировать принадлежащую ему вещь");
         }
         if (!item.getAvailable()) {
-            throw new BadRequestException("Невозможно создать бронирование - " +
+            throw new ValidationException("Невозможно создать бронирование - " +
                     "данная вещь недоступна");
         }
         Booking booking = toBooking(bookingShortDto);
         if (booking.getEnd().isBefore(booking.getStart())) {
-            throw new BadRequestException("Невозможно создать бронирование - " +
+            throw new ValidationException("Невозможно создать бронирование - " +
                     "дата окончания бронирования не может быть раньше даты начала бронирования");
         }
         booking.setBooker(user);
@@ -83,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
                     "не найден запрос на бронирование с id " + bookingId + " у пользователя с id" + userId);
         }
         if (!booking.getStatus().equals(BookingStatus.WAITING)) {
-            throw new BadRequestException("Невозможно подтвердить бронирование - " +
+            throw new ValidationException("Невозможно подтвердить бронирование - " +
                     "бронирование уже подтверждено или отклонено");
         }
         if (approved) {
@@ -148,7 +148,7 @@ public class BookingServiceImpl implements BookingService {
         switch (state) {
             case "ALL":
                 bookingDtoList.addAll(bookingRepository
-                        .findAllByBooker(user,pageRequest).toList());
+                        .findAllByBooker(user, pageRequest).toList());
                 break;
             case "CURRENT":
                 bookingDtoList.addAll(bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user,
